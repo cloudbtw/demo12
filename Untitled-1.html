@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Get</title>
+</head>
+<body>
+    <a href = "add.html">Добавление заявки</a>
+    <h1>Просмотр и редактирование заявок</h1>
+    <input type="text" id="searchParam" placeholder="Поиск по параметрам">
+    <button onclick="searchOrders()">Поиск</button>
+    <div id="ordersList"></div>
+    <script>   
+    function fetchOrders() {
+            fetch('https://localhost:7102/')
+                .then(response => response.json())
+                .then(data => {
+                    const ordersList = document.getElementById('ordersList');
+                    ordersList.innerHTML = '';
+                    data.forEach(order => {
+                        const orderDiv = document.createElement('div');
+                        orderDiv.innerHTML = `
+                            <h3>Заявка №${order.number}</h3>
+                            <p>Дата: ${order.dateAdded}</p>
+                            <p>Комментарий: ${order.Comment}</p>
+                            <p>Оборудование: ${order.model}</p>
+                            <p>Тип неисправности: ${order.typeTech}</p>
+                            <p>Описание: ${order.description}</p>
+                            <p>Клиент: ${order.client}</p>
+                            <p>Статус: ${order.status}</p>
+                            <p>Мастер: ${order.master}</p>
+                            <p>Номер: ${order.phone}</p>
+                            <button onclick="editOrder(${order.number})">Редактировать</button>
+                        `;
+                        ordersList.appendChild(orderDiv);
+                    });
+                })
+                .catch(error => console.error('Ошибка:', error));
+        }
+
+        function searchOrders() {
+            const param = document.getElementById('searchParam').value;
+            fetch(`https://localhost:7102/${param}`)
+                .then(response => response.json())
+                .then(data => {
+                    const ordersList = document.getElementById('ordersList');
+                    ordersList.innerHTML = '';
+                    data.forEach(order => {
+                        const orderDiv = document.createElement('div');
+                        orderDiv.innerHTML = `
+                            <h3>Заявка №${order.number}</h3>
+                            <p>Дата: ${order.dateAdded}</p>
+                            <p>Оборудование: ${order.Model}</p>
+                            <p>Тип неисправности: ${order.TypeTech}</p>
+                            <p>Описание: ${order.description}</p>
+                            <p>Клиент: ${order.client}</p>
+                            <p>Статус: ${order.status}</p>
+                            <p>Мастер: ${order.master}</p>
+                            <button onclick="editOrder(${order.number})">Редактировать</button>
+                        `;
+                        ordersList.appendChild(orderDiv);
+                    });
+                })
+                .catch(error => console.error('Ошибка:', error));
+        }
+
+        function editOrder(number) {
+            const newStatus = prompt('Новый статус:');
+            const newDescription = prompt('Новое описание:');
+            const newMaster = prompt('Новый мастер:');
+            const newComment = prompt('Комментарий:');
+
+            const updatedOrder = {
+                status: newStatus,
+                description: newDescription,
+                master: newMaster,
+                Comment: newComment
+            };
+
+            fetch(`https://localhost:7102/${number}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedOrder)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Заявка обновлена!');
+                fetchOrders();
+            })
+            .catch(error => console.error('Ошибка:', error));
+        }
+
+        fetchOrders();     
+    </script>
+</body>
+</html>

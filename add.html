@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <a href = "Untitled-1.html"> Просмотр и редактирование заявки</a>
+       <h1>Добавить заявку</h1>
+    <form id="orderForm">
+        <label for="number">Номер заявки:</label>
+        <input type="number" id="number" name="number" required><br>
+
+        <label for="dateAdded">Дата добавления:</label>
+        <input type="date" id="dateAdded" name="dateAdded" required><br>
+
+
+        <label for="model">Оборудование:</label>
+        <input type="text" id="model" name="model" required><br>
+
+        <label for="typeTech">Тип неисправности:</label>
+        <input type="text" id="typeTech" name="typeTech" required><br>
+
+        <label for="description">Описание проблемы:</label>
+        <textarea id="description" name="description" required></textarea><br>
+
+        <label for="client">Клиент:</label>
+        <input type="text" id="client" name="client" required><br>
+
+        <label for="phone">НОмерй телефона:</label>
+        <textarea id="phone" name="phone" required></textarea><br>
+
+        <label for="status">Статус:</label>
+        <select id="status" name="status" required>
+            <option value="новая заявка">новая заявка</option>
+            <option value="в процессе ремонта ">в процессе ремонта</option>
+            <option value="завершена">завершена</option>
+        </select><br>
+
+        <button type="submit">Добавить заявку</button>
+    </form>
+
+    <script>
+        document.getElementById('orderForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const order = {
+                number: document.getElementById('number').value,
+                dateAdded: document.getElementById('dateAdded').value,
+                model: document.getElementById('model').value,
+                typeTech: document.getElementById('typeTech').value,
+                phone: document.getElementById('phone').value,
+                description: document.getElementById('description').value,
+                client: document.getElementById('client').value,
+                status: document.getElementById('status').value
+            };
+
+            fetch('https://localhost:7102/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(order)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Заявка добавлена!');
+                document.getElementById('orderForm').reset();
+            })
+            .catch(error => console.error('Ошибка:', error));
+        });
+    </script>
+</body>
+</html>
